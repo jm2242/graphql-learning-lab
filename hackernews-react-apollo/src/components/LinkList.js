@@ -16,12 +16,29 @@ class LinkList extends Component {
     }
     const linksToRender = this.props.allLinksQuery.links
     return (
-      <div>
-        {linksToRender.map(link => (
-          <Link key={link.id} link={link}/>
+      <div className="pa3 pa5-ns">
+        {linksToRender.map((link, index) => (
+          <Link 
+            index={index} 
+            key={link.id} 
+            link={link}
+            updateStoreAfterVote={this._updateCacheAfterVote}
+          />
         ))}
       </div>
     )
+  }
+
+  _updateCacheAfterVote = (store, createVote, linkId) => {
+    // 1
+    const data = store.readQuery({ query: ALL_LINKS_QUERY })
+    
+    // 2
+    const votedLink = data.links.find(link => link.id === linkId)
+    votedLink.votes = createVote.link.votes
+    
+    // 3
+    store.writeQuery({ query: ALL_LINKS_QUERY, data })
   }
 
 }
@@ -33,6 +50,9 @@ const ALL_LINKS_QUERY = gql`
       id
       url
       description
+      votes {
+        id
+      }
     }
   }
 `
