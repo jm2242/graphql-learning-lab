@@ -3,6 +3,7 @@ import React, { Component } from 'react'
 // graphql dependencies
 import { graphql } from 'react-apollo'
 import gql from 'graphql-tag'
+import { ALL_LINKS_QUERY } from './LinkList'
 
 class CreateLink extends Component {
 
@@ -46,6 +47,14 @@ class CreateLink extends Component {
       variables: {
         description,
         url
+      },
+      update: (store, { data: { createLink } }) => {
+        const data = store.readQuery({ query: ALL_LINKS_QUERY })
+        data.links.splice(0,0,createLink)
+        store.writeQuery({
+          query: ALL_LINKS_QUERY,
+          data
+        })
       }
     })
 
